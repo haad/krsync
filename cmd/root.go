@@ -1,25 +1,29 @@
 package cmd
 
 import (
-  "fmt"
-  "os"
-  "github.com/spf13/cobra"
+	"fmt"
+	"github.com/spf13/cobra"
+	"os"
 )
 
 var rootCmd = &cobra.Command{
-  Use:   "hugo",
-  Short: "Hugo is a very fast static site generator",
-  Long: `A Fast and Flexible Static Site Generator built with
-                love by spf13 and friends in Go.
-                Complete documentation is available at http://hugo.spf13.com`,
-  Run: func(cmd *cobra.Command, args []string) {
-    // Do Stuff Here
-  },
+	Use:   "krsync",
+	Short: "Kubectl Rsync wrapper, uploading files to a container image runing in kubernetes.",
+	Long:  `Fast way how to upload files to running container in Kubernetes. `,
+	Run: func(cmd *cobra.Command, args []string) {
+		// Do Stuff Here
+	},
 }
 
+// Execute Main command execution entrypoint
 func Execute() {
-  if err := rootCmd.Execute(); err != nil {
-    fmt.Println(err)
-    os.Exit(1)
-  }
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
+func init() {
+	var debug bool
+	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Enables debug logging")
 }
