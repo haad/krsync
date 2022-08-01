@@ -99,6 +99,8 @@ type RsyncOptions struct {
 	BlockSize int
 	// Rsh -rsh=COMMAND specify the remote shell to use
 	Rsh string
+	// BlockingIO use blocking I/O for the remote shell
+	BlockingIO bool
 	// Existing skip creating new files on receiver
 	Existing bool
 	// IgnoreExisting skip updating files that exist on receiver
@@ -391,6 +393,10 @@ func getArguments(options RsyncOptions) []string {
 
 	if options.Rsh != "" {
 		arguments = append(arguments, "--rsh", options.Rsh)
+	}
+
+	if options.BlockingIO {
+		arguments = append(arguments, "--blocking-io")
 	}
 
 	if options.Existing {

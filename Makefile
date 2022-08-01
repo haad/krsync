@@ -1,6 +1,9 @@
  .PHONY: build install clean test integration modverify modtidy
+
 VERSION=`egrep -o '[0-9]+\.[0-9a-z.\-]+' version.go`
 GIT_SHA=`git rev-parse --short HEAD || echo`
+
+SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 build:
 	@echo "Building krsync..."
@@ -17,6 +20,9 @@ clean:
 test:
 	@echo "Running tests..."
 	#@go test `go list ./... | grep -v vendor/`
+
+fmt:
+	@gofmt -l -w -s $(SRC)
 
 integration: modtidy build test
 	@echo "Running integration tests..."

@@ -2,8 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
+
+  log "github.com/haad/krsync/log"
 )
 
 var rootCmd = &cobra.Command{
@@ -26,4 +29,6 @@ func Execute() {
 func init() {
 	var debug bool
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Enables debug logging")
+
+  log.InitLogger(debug)
 }
