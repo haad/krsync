@@ -44,6 +44,11 @@ func (t Task) Log() Log {
 	}
 }
 
+// GetCmdString returns given rsync task cmd as string for debug
+func (t Task) GetCmdString() string {
+	return t.rsync.GetCmdString()
+}
+
 // Run starts rsync process with options
 func (t *Task) Run() error {
 	stderr, err := t.rsync.StderrPipe()

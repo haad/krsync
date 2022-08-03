@@ -19,7 +19,7 @@ import (
 // p_user=$USER;p_name=$POD_NAME; rsync -avurP --blocking-io --rsync-path= --rsh="$(which kubectl) exec $p_name -i -- " /home/$USER/target_dir rsync:/home/$p_user/
 // krsync -av --progress --stats src-dir/ pod@namespace:/dest-dir
 // krsync -av --progress --stats src-dir/ pod:/dest-dir
-
+// /opt/homebrew/bin/rsync -avvv --blocking-io --rsync-path= --rsh="kubectl exec da-dev-v39721-da-c74679766-hcrrc -i -n da-dev -c php --"  test/dist rsync:/tmp/
 func init() {
     var namespace string
     var pod string
@@ -70,8 +70,11 @@ func syncFiles(namespace string, pod string, container string, srcdir string, ds
             Recursive: true,
             BlockingIO: true,
             Rsh: rsh,
+            RsyncPath: "=",
         },
 	)
+
+    log.Slog.Infof("Rsync cmd: %s", task.GetCmdString() )
 
 	go func() {
 		for {

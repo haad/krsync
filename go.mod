@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/spf13/cobra v1.5.0
-	github.com/zloylos/grsync v1.6.2
+	github.com/zloylos/grsync v1.6.4
 	go.uber.org/zap v1.21.0
 )
 
@@ -15,4 +15,4 @@ require (
 	go.uber.org/multierr v1.6.0 // indirect
 )
 
-replace github.com/zloylos/grsync => github.com/haad/grsync v1.6.2
+replace github.com/zloylos/grsync => github.com/haad/grsync v1.6.4
