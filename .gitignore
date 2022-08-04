@@ -28,5 +28,6 @@
 # Go workspace file
 go.work
 
+test/dist
 bin/krsync
 .vscode/

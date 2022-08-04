@@ -24,6 +24,7 @@ func init() {
     var namespace string
     var pod string
     var container string
+    var progress bool
 
 	var syncCmd = &cobra.Command{
 		Use:   "sync",
@@ -34,26 +35,28 @@ func init() {
             }
             src := args[0]
             dst := args[1]
-			syncFiles(namespace, pod, container, src, dst)
+			syncFiles(namespace, pod, container, src, dst, progress)
 		},
 	}
 
     syncCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Namespace pod is running in")
     syncCmd.Flags().StringVarP(&pod, "pod", "p", "", "Name of pod where we want to sync our data")
     syncCmd.Flags().StringVarP(&container, "container", "c", "", "Specific container inside given pod if needed.")
+    syncCmd.Flags().BoolVarP(&progress, "progress", "P", false, "Print upload files progress.")
+
 
     // syncCmd.Flags().StringVarP(&srcdir, "src", "s", "", "Name of pod where we want to sync our data")
     // syncCmd.Flags().StringVarP(&dstdir, "dst", "d", "", "Specific container inside given pod if needed.")
 
 
     // syncCmd.MarkFlagRequired("name")
-    syncCmd.MarkFlagRequired("pod")
+    syncCmd.MarkFlagRequired("pod") // #nosec
 
 	rootCmd.AddCommand(syncCmd)
 
 }
 
-func syncFiles(namespace string, pod string, container string, srcdir string, dstdir string) {
+func syncFiles(namespace string, pod string, container string, srcdir string, dstdir string, progress bool) {
     log.Slog.Infof("Uploading files from srcdir: %s, to dstdir: %s, on pod: %s, container: %s in namespace: %s.", srcdir, dstdir, pod, container, namespace)
 
     rsh := fmt.Sprintf("kubectl exec -i -n %s -c %s %s --", namespace, container, pod)
@@ -70,25 +73,28 @@ func syncFiles(namespace string, pod string, container string, srcdir string, ds
             Recursive: true,
             BlockingIO: true,
             Rsh: rsh,
-            RsyncPath: "=",
+            RsyncPath: "=", // We have to pass --rsync-path= argument to make sure kubectl exec only has one rsync.
+            Exclude: []string {".git"},
         },
 	)
 
     log.Slog.Infof("Rsync cmd: %s", task.GetCmdString() )
 
-	go func() {
-		for {
-			state := task.State()
-			fmt.Printf(
-				"progress: %.2f / rem. %d / tot. %d / sp. %s \n",
-				state.Progress,
-				state.Remain,
-				state.Total,
-				state.Speed,
-			)
-			<-time.After(time.Second)
-		}
-	}()
+    if (progress) {
+    	go func() {
+    		for {
+    			state := task.State()
+    			fmt.Printf(
+    				"progress: %.2f / rem. %d / tot. %d / sp. %s \n",
+    				state.Progress,
+    				state.Remain,
+    				state.Total,
+    				state.Speed,
+    			)
+    			<-time.After(time.Second)
+    		}
+    	}()
+    }
 
 	if err := task.Run(); err != nil {
 		panic(err)

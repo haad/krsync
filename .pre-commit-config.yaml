@@ -46,7 +46,7 @@ repos:
             # GoSec
             #
             -   id: go-sec-mod
-            -   id: go-sec-pkg
+            #-   id: go-sec-pkg
             #
             # StaticCheck
             #
